@@ -101,5 +101,10 @@ app.delete('/api/animais/:id', auth, async (req, res) => {
 });
 
 // INICIAR SERVIDOR
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Servidor rodando em http://localhost:${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`Rodando em http://localhost:${PORT}`));
+}
+
+module.exports = app; // ESSENCIAL para a Vercel
