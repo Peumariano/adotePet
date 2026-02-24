@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — AdoteAmigo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F0A06;--surface:#1A1208;--card:#221709;--border:rgba(201,123,61,.18);
+  --terra:#C97B3D;--rust:#A0522D;--cream:#FAF6F0;--muted:rgba(250,246,240,.45);
+  --sand:rgba(250,246,240,.08);--red:#e74c3c;--green:#25D366;
+  --ff-d:'Playfair Display',Georgia,serif;--ff-b:'DM Sans',system-ui,sans-serif;
+  --r-md:14px;--r-lg:22px;--r-xl:50px;--ease:.3s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-b);background:var(--bg);color:var(--cream);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--terra);border-radius:4px}
+
+/* PASSWORD OVERLAY */
+.pwd-overlay{position:fixed;inset:0;z-index:5000;background:rgba(5,3,1,.95);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.pwd-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:2.75rem 2.25rem;max-width:380px;width:100%;text-align:center;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes slideUp{from{transform:translateY(30px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+.lock{font-size:3rem;display:block;margin-bottom:1.1rem;animation:bounce 1s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.pwd-box h2{font-family:var(--ff-d);font-size:1.9rem;font-weight:900;margin-bottom:.4rem;letter-spacing:-.5px}
+.pwd-box p{color:var(--muted);font-size:.88rem;margin-bottom:1.6rem}
+.pwd-in{background:rgba(255,255,255,.06);border:1.5px solid var(--border);color:var(--cream);font-family:var(--ff-b);font-size:1.1rem;padding:13px 18px;border-radius:var(--r-md);width:100%;outline:none;text-align:center;letter-spacing:5px;transition:border-color var(--ease),box-shadow var(--ease);margin-bottom:.9rem}
+.pwd-in:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(201,123,61,.15)}
+.pwd-in::placeholder{letter-spacing:2px;font-size:.9rem}
+.btn-login{background:linear-gradient(135deg,var(--terra),var(--rust));color:#fff;font-family:var(--ff-b);font-size:.97rem;font-weight:700;padding:14px;border:none;border-radius:var(--r-md);width:100%;cursor:pointer;box-shadow:0 8px 22px rgba(201,123,61,.3);transition:all var(--ease)}
+.btn-login:hover{opacity:.9;transform:translateY(-2px)}
+
+/* NAV */
+.anav{background:rgba(10,6,2,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font-family:var(--ff-d);font-size:1.45rem;font-weight:900;color:var(--terra);display:flex;align-items:center;gap:8px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;padding:8px 16px;border-radius:100px;border:1px solid var(--border);transition:all var(--ease)}
+.back-btn:hover{color:var(--terra);border-color:var(--terra)}
+
+/* HERO STRIP */
+.ahero{background:linear-gradient(160deg,var(--surface) 0%,#2a1a0a 100%);padding:4rem 2rem 3rem;text-align:center;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.ahero::before{content:'🛡️';position:absolute;font-size:18rem;opacity:.035;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1}
+.ahero h1{font-family:var(--ff-d);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;letter-spacing:-1px;position:relative}
+.ahero h1 span{color:var(--terra)}
+.ahero p{color:var(--muted);margin-top:.6rem;max-width:460px;margin-left:auto;margin-right:auto;font-size:.95rem;position:relative}
+.stats-row{display:flex;justify-content:center;gap:3rem;margin-top:2.5rem;position:relative;flex-wrap:wrap}
+.astat .n{font-family:var(--ff-d);font-size:2.4rem;font-weight:900;color:var(--terra);display:block;line-height:1}
+.astat .l{font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+
+/* MAIN */
+.amain{max-width:1280px;margin:0 auto;padding:2.5rem 2rem 5rem}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+.toolbar h2{font-family:var(--ff-d);font-size:1.6rem;font-weight:700}
+.search{background:var(--sand);border:1px solid var(--border);color:var(--cream);font-family:var(--ff-b);font-size:.9rem;padding:10px 18px;border-radius:100px;outline:none;transition:all var(--ease);min-width:210px}
+.search::placeholder{color:var(--muted)}
+.search:focus{border-color:var(--terra);background:rgba(255,255,255,.1)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.75rem}
+
+/* ADMIN CARD */
+.acard{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:all var(--ease);animation:cardIn .4s ease both}
+.acard:hover{border-color:rgba(201,123,61,.4);background:#2d1e0d;transform:translateY(-5px);box-shadow:0 18px 48px rgba(0,0,0,.5)}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.acard img{width:100%;height:200px;object-fit:cover;display:block}
+.acard-body{padding:1.25rem}
+.atags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.7rem}
+.atag{background:rgba(201,123,61,.14);color:var(--terra);font-size:.7rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:100px}
+.acard h3{font-family:var(--ff-d);font-size:1.2rem;font-weight:700;color:var(--cream);margin-bottom:.3rem}
+.acard .meta{color:var(--muted);font-size:.8rem;margin-bottom:1rem;line-height:1.5}
+.btn-del{background:rgba(231,76,60,.12);color:#ff7675;border:1px solid rgba(231,76,60,.25);font-family:var(--ff-b);font-size:.88rem;font-weight:600;padding:11px;width:100%;border-radius:var(--r-md);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all var(--ease)}
+.btn-del:hover{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 4px 14px rgba(231,76,60,.4)}
+
+/* EMPTY */
+.empty{grid-column:1/-1;text-align:center;padding:4rem 2rem}
+.empty-ico{font-size:3.5rem;display:block;margin-bottom:1rem;opacity:.4}
+.empty h3{font-family:var(--ff-d);font-size:1.6rem;margin-bottom:.4rem}
+.empty p{color:var(--muted);font-size:.9rem}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.skel-img{height:200px;border-radius:0}
+.skel-body{padding:1.25rem;display:flex;flex-direction:column;gap:10px}
+.skel-ln{height:12px}.skel-ln.s{width:50%}.skel-ln.m{width:70%}.skel-ln.l{width:90%}
+
+/* TOAST */
+.twrap{position:fixed;bottom:1.75rem;right:1.75rem;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1e1208;border-left:4px solid var(--green);color:var(--cream);padding:13px 20px;border-radius:var(--r-md);font-size:.88rem;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 8px 28px rgba(0,0,0,.5);animation:tIn .35s cubic-bezier(.34,1.56,.64,1) both}
+.toast.err{border-left-color:var(--red)}
+@keyframes tIn{from{transform:translateX(80px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tOut{to{transform:translateX(80px);opacity:0}}
+
+@media(max-width:640px){.stats-row{gap:1.5rem}.toolbar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD -->
+<div class="pwd-overlay" id="pwdOverlay">
+  <div class="pwd-box">
+    <span class="lock">🔐</span>
+    <h2>Área Restrita</h2>
+    <p>Digite a senha administrativa para acessar o painel</p>
+    <input type="password" class="pwd-in" id="pwdIn" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn-login" onclick="login()">Entrar no Painel</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="anav">
+  <div class="logo">🛡️ Painel Admin</div>
+  <a href="index.html" class="back-btn">← Voltar ao Site</a>
+</nav>
+
+<!-- HERO -->
+<div class="ahero">
+  <h1>Painel de <span>Gerenciamento</span></h1>
+  <p>Remova animais que já encontraram um lar. Mantenha a plataforma atualizada.</p>
+  <div class="stats-row">
+    <div class="astat"><span class="n" id="stTotal">—</span><span class="l">Total</span></div>
+    <div class="astat"><span class="n" id="stCach">—</span><span class="l">Cachorros</span></div>
+    <div class="astat"><span class="n" id="stGato">—</span><span class="l">Gatos</span></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="amain">
+  <div class="toolbar">
+    <h2>Animais Cadastrados</h2>
+    <input type="search" class="search" id="adminSearch" placeholder="🔍 Buscar por nome..." oninput="filterAnimals(this.value)">
+  </div>
+  <div class="grid" id="agrid"></div>
+</main>
+
+<div class="twrap" id="twrap"></div>
+
+<script>
+var pwd='', allData=[];
+
+// TOAST
+function toast(msg,type){
+  var w=document.getElementById('twrap');
+  var t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  t.innerHTML='<span>'+(type==='err'?'❌':'✅')+'</span><span>'+msg+'</span>';
+  w.appendChild(t);
+  setTimeout(function(){t.style.animation='tOut .3s ease forwards';setTimeout(function(){t.remove()},300)},3500);
+}
+
+// COUNT ANIM
+function count(id,n){
+  var el=document.getElementById(id);if(!el)return;
+  var i=0,s=Math.max(1,Math.ceil(n/28));
+  var t=setInterval(function(){i=Math.min(i+s,n);el.textContent=i;if(i>=n)clearInterval(t)},40);
+}
+
+// LOGIN
+function login(){
+  var v=document.getElementById('pwdIn').value.trim();
+  if(!v)return;
+  pwd=v;
+  document.getElementById('pwdOverlay').style.display='none';
+  document.body.style.overflow='';
+  loadAnimals();
+}
+document.getElementById('pwdIn').addEventListener('keydown',function(e){if(e.key==='Enter')login()});
+
+// LOAD
+async function loadAnimals(){
+  var g=document.getElementById('agrid');
+  g.innerHTML=Array(6).fill('<div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-ln s"></div><div class="skel skel-ln l"></div><div class="skel skel-ln m"></div></div></div>').join('');
+  try{
+    var r=await fetch('/api/animais');
+    allData=await r.json();
+    renderAnimals(allData);
+    var c=allData.filter(function(a){return a.especie==='Cachorro'}).length;
+    var ga=allData.filter(function(a){return a.especie==='Gato'}).length;
+    count('stTotal',allData.length);
+    count('stCach',c);
+    count('stGato',ga);
+  }catch(e){
+    g.innerHTML='<div class="empty"><span class="empty-ico">😿</span><h3>Erro ao carregar</h3><p>Verifique a conexão.</p></div>';
+  }
+}
+
+// FILTER
+function filterAnimals(q){
+  var low=q.toLowerCase();
+  var f=allData.filter(function(a){
+    return(a.nome||'').toLowerCase().includes(low)||(a.especie||'').toLowerCase().includes(low)||(a.raca||'').toLowerCase().includes(low);
+  });
+  renderAnimals(f);
+}
+
+// RENDER
+function renderAnimals(data){
+  var g=document.getElementById('agrid');
+  if(!data.length){
+    g.innerHTML='<div class="empty"><span class="empty-ico">🎉</span><h3>Tudo limpo!</h3><p>Todos os animais encontraram um lar.</p></div>';
+    return;
+  }
+  g.innerHTML=data.map(function(a,i){
+    var nomeSafe=(a.nome||'').replace(/'/g,'');
+    return '<div class="acard" style="animation-delay:'+Math.min(i,8)*55+'ms">'
+      +'<img src="'+(a.imagemUrl||'')+'" alt="'+(a.nome||'')+'" loading="lazy">'
+      +'<div class="acard-body">'
+        +'<div class="atags">'
+          +(a.especie?'<span class="atag">'+a.especie+'</span>':'')
+          +(a.idade?'<span class="atag">'+a.idade+'</span>':'')
+          +(a.raca?'<span class="atag">'+a.raca+'</span>':'')
+        +'</div>'
+        +'<h3>'+(a.nome||'')+'</h3>'
+        +'<p class="meta">Doador: '+(a.nomeDoador||'—')+' &nbsp;•&nbsp; '+(a.contatoDoador||'—')+'</p>'
+        +'<button class="btn-del" onclick="deleteAnimal(\''+a._id+'\',\''+nomeSafe+'\')">🗑️ Remover — Encontrou um lar!</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+// DELETE
+async function deleteAnimal(id,nome){
+  if(!confirm('Remover "'+nome+'"?\nEsta ação não pode ser desfeita.'))return;
+  try{
+    var r=await fetch('/api/animais/'+id,{method:'DELETE',headers:{'x-admin-password':pwd}});
+    if(r.ok){
+      toast(nome+' removido com sucesso! 🏡');
+      allData=allData.filter(function(a){return a._id!==id});
+      renderAnimals(allData);
+      var c=allData.filter(function(a){return a.especie==='Cachorro'}).length;
+      var ga=allData.filter(function(a){return a.especie==='Gato'}).length;
+      document.getElementById('stTotal').textContent=allData.length;
+      document.getElementById('stCach').textContent=c;
+      document.getElementById('stGato').textContent=ga;
+    }else if(r.status===401){
+      toast('Senha incorreta!','err');
+      pwd='';
+      document.getElementById('pwdIn').value='';
+      document.getElementById('pwdOverlay').style.display='flex';
+      document.body.style.overflow='hidden';
+    }else{
+      toast('Erro ao remover.','err');
+    }
+  }catch(e){toast('Erro de conexão.','err')}
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.style.overflow='hidden';
+  document.getElementById('pwdIn').focus();
+});
+</script>
+</body>
+</html>
