@@ -27,7 +27,7 @@ const upload = multer({ storage });
 // 2. MIDDLEWARES
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
 
 // Middleware de segurança para o Admin
 const auth = (req, res, next) => {
