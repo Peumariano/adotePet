@@ -1,112 +1,72 @@
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const multer = require('multer');
+const express               = require('express');
+const mongoose              = require('mongoose');
+const cors                  = require('cors');
+const multer                = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('cloudinary').v2;
+const cloudinary            = require('cloudinary').v2;
+const animalRoutes          = require('./routes/animalRoutes');
 
 const app = express();
 
-// 1. CONFIGURAÇÃO CLOUDINARY
+// ─── CLOUDINARY ────────────────────────────────────────────────
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: { 
-    folder: 'animais_adocao', 
-    allowed_formats: ['jpg', 'png', 'jpeg'] 
+  cloudinary,
+  params: {
+    folder:          'adotepet',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    transformation:  [{ width: 800, height: 600, crop: 'limit', quality: 'auto' }],
   },
 });
-const upload = multer({ storage });
+const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 
-// 2. MIDDLEWARES
+// ─── MIDDLEWARES ───────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Multer injetado APENAS no POST de animais (antes de chegar no router)
+app.post('/api/animais', upload.single('foto'), (req, res, next) => next());
 
-// Middleware de segurança para o Admin
-const auth = (req, res, next) => {
-    const password = req.headers['x-admin-password'];
-    if (password === process.env.ADMIN_PASSWORD) {
-        next();
-    } else {
-        res.status(401).json({ message: "Acesso negado: Senha incorreta." });
-    }
-};
-
-// 3. CONEXÃO MONGODB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ Conectado ao MongoDB!"))
-  .catch(err => console.error("❌ Erro ao conectar:", err));
-
-// 4. MODELO (Animal)
-const Animal = mongoose.model('Animal', new mongoose.Schema({
-    nome: { type: String, required: true },
-    especie: { type: String, required: true },
-    raca: String,
-    idade: String,
-    porte: String,
-    descricao: String,
-    imagemUrl: String,
-    nomeDoador: String,
-    contatoDoador: String,
-    dataCriacao: { type: Date, default: Date.now }
-}));
-
-// 5. ROTAS PÚBLICAS
-// Listar animais
-app.get('/api/animais', async (req, res) => {
-    const animais = await Animal.find().sort({ dataCriacao: -1 });
-    res.json(animais);
-});
-
-// Cadastrar animal (com upload de foto)
-app.post('/api/animais', upload.single('foto'), async (req, res) => {
-    try {
-        const novoAnimal = new Animal({
-            ...req.body,
-            imagemUrl: req.file ? req.file.path : 'https://via.placeholder.com/300'
-        });
-        await novoAnimal.save();
-        res.status(201).json({ message: "Cadastrado com sucesso!" });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
-
-// 6. ROTAS ADMINISTRATIVAS
-// Validar login do Admin
-app.post('/api/admin/login', (req, res) => {
-    const { password } = req.body;
-    if (password === process.env.ADMIN_PASSWORD) {
-        res.json({ success: true });
-    } else {
-        res.status(401).json({ success: false });
-    }
-});
-
-// Deletar animal (Protegida)
-app.delete('/api/animais/:id', auth, async (req, res) => {
-    try {
-        await Animal.findByIdAndDelete(req.params.id);
-        res.json({ message: "Animal removido com sucesso!" });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// INICIAR SERVIDOR
-
-const PORT = process.env.PORT || 3000;
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3000;
-
-    app.listen(PORT, () => console.log(`Rodando em http://localhost:${PORT}`));
+// ─── DB (lazy singleton — essencial para serverless) ───────────
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
+  await mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 8000,
+    socketTimeoutMS:          45000,
+  });
+  isConnected = true;
+  console.log('✅ MongoDB conectado');
 }
 
-module.exports = app; // ESSENCIAL para a Vercel
+// Conecta antes de qualquer rota /api
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection error:', err);
+    res.status(503).json({ message: 'Serviço indisponível. Tente novamente.' });
+  }
+});
+
+// ─── ROUTES ────────────────────────────────────────────────────
+app.use('/api', animalRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => res.json({ ok: true, ts: new Date() }));
+
+// ─── LOCAL DEV ─────────────────────────────────────────────────
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`🚀 http://localhost:${PORT}`));
+}
+
+module.exports = app;

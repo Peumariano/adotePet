@@ -1,250 +1,26 @@
-function toggleForm() {
-    const modal = document.getElementById('modalForm');
-    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-}
+/* ══════════════════════════════════════════
+   ADOTEPET — Main JS
+   ══════════════════════════════════════════ */
 
-async function carregarAnimais() {
-    const grid = document.getElementById('grid-animais');
-    try {
-        const res = await fetch('/api/animais');
-        const animais = await res.json();
-        
-        grid.innerHTML = animais.map(animal => {
-            const zapLink = `https://wa.me/${animal.contatoDoador.replace(/\D/g, '')}?text=Olá! Quero saber mais sobre o ${animal.nome}`;
-            return `
-                <div class="card">
-                    <img src="${animal.imagemUrl}" alt="${animal.nome}">
-                    <div class="card-body">
-                        <h3>${animal.nome}</h3>
-                        <p><strong>${animal.especie}</strong> • ${animal.idade}</p>
-                        <p>${animal.descricao || ''}</p>
-                        <button class="btn-hero-main" style="width:100%" onclick="window.open('${zapLink}')">Quero Adotar</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    } catch (err) {
-        grid.innerHTML = "<p>Erro ao carregar animais.</p>";
-    }
-}
+// ─── STATE ──────────────────────────────────────────────────────
+let allAnimals = [];
+let currentFilter = 'Todos';
 
-document.getElementById('formAnimal').onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const btn = e.target.querySelector('button');
-    btn.disabled = true;
-    btn.innerText = "Cadastrando...";
-
-    try {
-        const res = await fetch('/api/animais', { method: 'POST', body: formData });
-        if (res.ok) {
-            alert("Sucesso!");
-            location.reload();
-        }
-    } catch (err) {
-        alert("Erro ao cadastrar.");
-    } finally {
-        btn.disabled = false;
-    }
-};
-
-// ─── TOAST ───────────────────────────────────────────────
-const toastContainer = document.createElement('div');
-toastContainer.className = 'toast-container';
-document.body.appendChild(toastContainer);
-
-function showToast(msg, type = 'success') {
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  const icon = type === 'success' ? '✅' : '❌';
-  t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
-  toastContainer.appendChild(t);
+// ─── UTILS ──────────────────────────────────────────────────────
+function toast(msg, type = 'ok') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast' + (type === 'err' ? ' err' : '');
+  el.innerHTML = `<span>${type === 'err' ? '❌' : '✅'}</span><span>${msg}</span>`;
+  wrap.appendChild(el);
   setTimeout(() => {
-    t.style.animation = 'toastOut 0.3s ease forwards';
-    setTimeout(() => t.remove(), 300);
-  }, 3500);
-}
-
-// ─── NAVBAR SCROLL ─────────────────────────────────────
-window.addEventListener('scroll', () => {
-  const nav = document.querySelector('.navbar');
-  if (nav) nav.classList.toggle('scrolled', window.scrollY > 20);
-});
-
-// ─── MODAL ─────────────────────────────────────────────
-function toggleForm() {
-  const modal = document.getElementById('modalForm');
-  modal.classList.toggle('open');
-  document.body.style.overflow = modal.classList.contains('open') ? 'hidden' : '';
-}
-
-// close on backdrop click
-document.getElementById('modalForm')?.addEventListener('click', e => {
-  if (e.target.id === 'modalForm') toggleForm();
-});
-
-// Escape key
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    const m = document.getElementById('modalForm');
-    if (m?.classList.contains('open')) toggleForm();
-  }
-});
-
-// ─── IMAGE PREVIEW ─────────────────────────────────────
-const fotoInput = document.querySelector('input[name="foto"]');
-let previewEl = null;
-
-if (fotoInput) {
-  const wrap = document.createElement('div');
-  wrap.className = 'upload-preview';
-  const img = document.createElement('img');
-  wrap.appendChild(img);
-  fotoInput.parentNode.insertBefore(wrap, fotoInput.nextSibling);
-  previewEl = { wrap, img };
-
-  fotoInput.addEventListener('change', () => {
-    const file = fotoInput.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        previewEl.img.src = e.target.result;
-        previewEl.wrap.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-}
-
-// ─── SUBMIT FORM ───────────────────────────────────────
-document.getElementById('formAnimal')?.addEventListener('submit', async e => {
-  e.preventDefault();
-  const btn = e.target.querySelector('.btn-success');
-  btn.textContent = '⏳ Cadastrando...';
-  btn.disabled = true;
-
-  const formData = new FormData(e.target);
-
-  try {
-    const res = await fetch('/api/animais', { method: 'POST', body: formData });
-    if (res.ok) {
-      showToast('Animal cadastrado com sucesso! 🐾');
-      e.target.reset();
-      if (previewEl) previewEl.wrap.style.display = 'none';
-      toggleForm();
-      await carregarAnimais();
-    } else {
-      showToast('Erro ao cadastrar. Tente novamente.', 'error');
-    }
-  } catch {
-    showToast('Erro de conexão.', 'error');
-  } finally {
-    btn.textContent = 'Cadastrar Animal';
-    btn.disabled = false;
-  }
-});
-
-// ─── ANIMALS ──────────────────────────────────────────
-let todosAnimais = [];
-let filtroAtual = 'Todos';
-
-async function carregarAnimais() {
-  const grid = document.getElementById('grid-animais');
-  if (!grid) return;
-
-  // Show skeletons
-  grid.innerHTML = Array(6).fill(`
-    <div class="skeleton-card">
-      <div class="skeleton skeleton-img"></div>
-      <div class="skeleton-body">
-        <div class="skeleton skeleton-line short"></div>
-        <div class="skeleton skeleton-line long"></div>
-        <div class="skeleton skeleton-line"></div>
-      </div>
-    </div>
-  `).join('');
-
-  try {
-    const res = await fetch('/api/animais');
-    todosAnimais = await res.json();
-    renderAnimais();
-    atualizarStats();
-  } catch {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">😿</div>
-        <h3>Não foi possível carregar</h3>
-        <p>Verifique sua conexão e recarregue a página.</p>
-      </div>`;
-  }
-}
-
-function renderAnimais() {
-  const grid = document.getElementById('grid-animais');
-  if (!grid) return;
-
-  const filtrados = filtroAtual === 'Todos'
-    ? todosAnimais
-    : todosAnimais.filter(a => a.especie === filtroAtual);
-
-  if (filtrados.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🐾</div>
-        <h3>Nenhum animal por aqui ainda</h3>
-        <p>Seja o primeiro a cadastrar um animal para adoção!</p>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = filtrados.map((a, i) => {
-    const initials = (a.nomeDoador || 'A').charAt(0).toUpperCase();
-    const wpp = a.contatoDoador ? a.contatoDoador.replace(/\D/g, '') : '';
-    const wppLink = wpp ? `https://wa.me/55${wpp}?text=Olá! Vi o anúncio do ${a.nome} no AdoteAmigo e gostaria de saber mais!` : '#';
-    const delay = (i % 6) * 80;
-
-    return `
-      <div class="card" style="animation-delay:${delay}ms">
-        <div class="card-img-wrap">
-          <img src="${a.imagemUrl}" alt="${a.nome}" loading="lazy">
-          <div class="card-badge">${a.especie || 'Animal'}</div>
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            ${a.raca ? `<span class="tag">${a.raca}</span>` : ''}
-            ${a.idade ? `<span class="tag sage">${a.idade}</span>` : ''}
-          </div>
-          <h3>${a.nome}</h3>
-          <p>${a.descricao || 'Um amiguinho esperando por um lar cheio de amor.'}</p>
-          <div class="card-footer">
-            <div class="card-donor">
-              <div class="donor-avatar">${initials}</div>
-              <span class="donor-name">${a.nomeDoador || 'Doador'}</span>
-            </div>
-            <a href="${wppLink}" target="_blank" class="btn-whatsapp">
-              💬 Adotar
-            </a>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function atualizarStats() {
-  const cachorros = todosAnimais.filter(a => a.especie === 'Cachorro').length;
-  const gatos = todosAnimais.filter(a => a.especie === 'Gato').length;
-
-  const els = {
-    total: document.getElementById('stat-total'),
-    cachorros: document.getElementById('stat-cachorros'),
-    gatos: document.getElementById('stat-gatos'),
-  };
-  if (els.total) animateCount(els.total, todosAnimais.length);
-  if (els.cachorros) animateCount(els.cachorros, cachorros);
-  if (els.gatos) animateCount(els.gatos, gatos);
+    el.style.animation = 'tOut .3s ease forwards';
+    setTimeout(() => el.remove(), 300);
+  }, 3800);
 }
 
 function animateCount(el, target) {
+  if (!el || target === 0) { if(el) el.textContent = 0; return; }
   let n = 0;
   const step = Math.max(1, Math.ceil(target / 30));
   const timer = setInterval(() => {
@@ -254,15 +30,225 @@ function animateCount(el, target) {
   }, 40);
 }
 
-// ─── FILTER BUTTONS ─────────────────────────────────────
-document.querySelectorAll('.filter-btn').forEach(btn => {
+// ─── NAVBAR ─────────────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Hamburger
+const hamburger = document.getElementById('hamburger');
+const navActions = document.getElementById('navActions');
+hamburger?.addEventListener('click', () => {
+  navActions.classList.toggle('open');
+});
+
+// ─── MODAL ──────────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal')?.addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ─── IMAGE PREVIEW ───────────────────────────────────────────────
+const fotoInput = document.getElementById('fotoInput');
+const imgPreview = document.getElementById('imgPreview');
+const imgPreviewImg = document.getElementById('imgPreviewImg');
+
+const uploadArea = document.querySelector('.upload-area');
+uploadArea?.addEventListener('click', () => fotoInput.click());
+uploadArea?.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--terra)'; });
+uploadArea?.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+uploadArea?.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = '';
+  if (e.dataTransfer.files[0]) {
+    fotoInput.files = e.dataTransfer.files;
+    handleFilePreview(e.dataTransfer.files[0]);
+  }
+});
+
+fotoInput?.addEventListener('change', () => {
+  if (fotoInput.files[0]) handleFilePreview(fotoInput.files[0]);
+});
+
+function handleFilePreview(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    imgPreviewImg.src = e.target.result;
+    imgPreview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('removeImg')?.addEventListener('click', e => {
+  e.stopPropagation();
+  fotoInput.value = '';
+  imgPreview.style.display = 'none';
+  imgPreviewImg.src = '';
+});
+
+// ─── FORM SUBMIT ─────────────────────────────────────────────────
+document.getElementById('formAnimal')?.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Cadastrando...';
+
+  try {
+    const res = await fetch('/api/animais', {
+      method: 'POST',
+      body: new FormData(e.target),
+    });
+    if (res.ok) {
+      toast('Animal cadastrado com sucesso! 🐾');
+      e.target.reset();
+      imgPreview.style.display = 'none';
+      closeModal();
+      await loadAnimals();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      toast(data.error || 'Erro ao cadastrar.', 'err');
+    }
+  } catch {
+    toast('Erro de conexão.', 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🐾 Cadastrar Animal';
+  }
+});
+
+// ─── FILTER ──────────────────────────────────────────────────────
+document.querySelectorAll('.f-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    filtroAtual = btn.dataset.filter;
-    renderAnimais();
+    currentFilter = btn.dataset.f;
+    renderAnimals();
   });
 });
 
-// ─── INIT ────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', carregarAnimais);
+// ─── RENDER ──────────────────────────────────────────────────────
+function renderAnimals() {
+  const grid = document.getElementById('grid');
+  const countEl = document.getElementById('animalCount');
+
+  const filtered = currentFilter === 'Todos'
+    ? allAnimals
+    : allAnimals.filter(a => a.especie === currentFilter);
+
+  if (countEl) {
+    countEl.innerHTML = `<strong>${filtered.length}</strong> ${filtered.length === 1 ? 'animal disponível' : 'animais disponíveis'}`;
+  }
+
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div class="empty">
+        <span class="empty-ico">🐾</span>
+        <h3>Nenhum animal aqui ainda</h3>
+        <p>Seja o primeiro a cadastrar um para adoção!</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((a, i) => {
+    const initials = (a.nomeDoador || 'A').charAt(0).toUpperCase();
+    const wpp = (a.contatoDoador || '').replace(/\D/g, '');
+    const waLink = wpp
+      ? `https://wa.me/55${wpp}?text=Olá!%20Vi%20o%20anúncio%20de%20*${encodeURIComponent(a.nome)}*%20no%20AdotePet%20e%20quero%20saber%20mais!`
+      : '#';
+    const delay = (i % 8) * 65;
+
+    return `
+      <div class="card" style="animation-delay:${delay}ms">
+        <div class="card-img">
+          <img
+            src="${a.imagemUrl || 'https://placedog.net/600/450?r'}"
+            alt="${a.nome}"
+            loading="lazy"
+            onerror="this.src='https://placedog.net/600/450?id=${i}'"
+          >
+          <div class="card-badge">${a.especie || 'Animal'}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-tags">
+            ${a.raca ? `<span class="tag">${a.raca}</span>` : ''}
+            ${a.idade ? `<span class="tag sage">${a.idade}</span>` : ''}
+            ${a.porte ? `<span class="tag">${a.porte}</span>` : ''}
+          </div>
+          <h3>${a.nome}</h3>
+          <p class="card-desc">${a.descricao || 'Um amiguinho esperando por um lar cheio de amor e carinho.'}</p>
+          <div class="card-foot">
+            <div class="donor">
+              <div class="av">${initials}</div>
+              <span class="donor-name">${a.nomeDoador || 'Doador'}</span>
+            </div>
+            <a href="${waLink}" target="_blank" rel="noopener" class="btn-wa">
+              💬 Adotar
+            </a>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─── LOAD ────────────────────────────────────────────────────────
+async function loadAnimals() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = Array(6).fill(`
+    <div class="skel-card">
+      <div class="skel skel-img"></div>
+      <div class="skel-body">
+        <div class="skel skel-ln s"></div>
+        <div class="skel skel-ln l"></div>
+        <div class="skel skel-ln m"></div>
+      </div>
+    </div>`).join('');
+
+  try {
+    const res = await fetch('/api/animais');
+    if (!res.ok) throw new Error('API error');
+    allAnimals = await res.json();
+    renderAnimals();
+
+    const dogs = allAnimals.filter(a => a.especie === 'Cachorro').length;
+    const cats = allAnimals.filter(a => a.especie === 'Gato').length;
+
+    animateCount(document.getElementById('sTotal'), allAnimals.length);
+    animateCount(document.getElementById('sCach'), dogs);
+    animateCount(document.getElementById('sGato'), cats);
+  } catch {
+    grid.innerHTML = `
+      <div class="empty">
+        <span class="empty-ico">😿</span>
+        <h3>Não foi possível carregar</h3>
+        <p>Verifique a conexão e recarregue a página.</p>
+      </div>`;
+  }
+}
+
+// ─── SCROLL REVEAL ────────────────────────────────────────────────
+function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadAnimals();
+  initReveal();
+});

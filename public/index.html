@@ -1,350 +1,224 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AdoteAmigo 🐾</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --cream:#FAF6F0;--sand:#EDE0CC;--terra:#C97B3D;--rust:#8B4513;
-  --deep:#2C1F0E;--bark:#6B4226;--sage:#7A9E7E;--sage-lt:#C8E6CB;
-  --white:#FFFFFF;--shadow:rgba(44,31,14,0.12);
-  --ff-display:'Playfair Display',Georgia,serif;
-  --ff-body:'DM Sans',system-ui,sans-serif;
-  --r-sm:8px;--r-md:16px;--r-lg:24px;--r-xl:48px;
-  --ease:0.3s cubic-bezier(0.4,0,0.2,1);
-}
-html{scroll-behavior:smooth}
-body{font-family:var(--ff-body);background:var(--cream);color:var(--deep);line-height:1.6;overflow-x:hidden}
-::-webkit-scrollbar{width:7px}
-::-webkit-scrollbar-track{background:var(--sand)}
-::-webkit-scrollbar-thumb{background:var(--terra);border-radius:4px}
-
-/* NAV */
-.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(250,246,240,0.93);backdrop-filter:blur(16px);border-bottom:1px solid rgba(201,123,61,0.18);transition:box-shadow var(--ease)}
-.navbar.scrolled{box-shadow:0 4px 28px var(--shadow)}
-.nav-content{max-width:1280px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:70px}
-.logo{font-family:var(--ff-display);font-size:1.5rem;font-weight:900;color:var(--bark);display:flex;align-items:center;gap:8px}
-.logo-paw{display:inline-block;animation:wag 2.5s ease-in-out infinite}
-@keyframes wag{0%,100%{transform:rotate(0)}30%{transform:rotate(-12deg)}70%{transform:rotate(12deg)}}
-.nav-links{display:flex;align-items:center;gap:1.25rem}
-.nav-a{font-size:.9rem;font-weight:500;color:var(--bark);text-decoration:none;position:relative;padding-bottom:2px}
-.nav-a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--terra);transition:width var(--ease)}
-.nav-a:hover::after{width:100%}
-.btn-nav{background:var(--terra);color:#fff;font-family:var(--ff-body);font-size:.88rem;font-weight:600;padding:10px 22px;border:none;border-radius:var(--r-xl);cursor:pointer;box-shadow:0 4px 14px rgba(201,123,61,.35);transition:all var(--ease)}
-.btn-nav:hover{background:var(--rust);transform:translateY(-2px);box-shadow:0 8px 22px rgba(201,123,61,.45)}
-
-/* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;
-  background:radial-gradient(ellipse 80% 55% at 65% 35%,rgba(201,123,61,.16) 0%,transparent 65%),
-             radial-gradient(ellipse 50% 70% at 5% 85%,rgba(122,158,126,.14) 0%,transparent 55%),
-             var(--cream)}
-.hero::before{content:'🐾';position:absolute;font-size:22rem;opacity:.035;right:-3rem;top:50%;transform:translateY(-50%);pointer-events:none;line-height:1}
-.hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:100px;background:linear-gradient(to top,var(--cream),transparent);pointer-events:none}
-.hero-inner{max-width:1280px;margin:0 auto;padding:120px 2rem 80px;position:relative;z-index:2}
-.hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(201,123,61,.1);border:1px solid rgba(201,123,61,.25);color:var(--terra);font-size:.78rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:1.5rem;animation:fadeUp .7s ease both}
-.hero h1{font-family:var(--ff-display);font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;line-height:1.05;letter-spacing:-2px;color:var(--deep);margin-bottom:1.25rem;animation:fadeUp .7s .1s ease both}
-.hero h1 em{font-style:italic;color:var(--terra)}
-.hero-p{font-size:1.1rem;color:var(--bark);font-weight:300;max-width:480px;line-height:1.75;margin-bottom:2.5rem;animation:fadeUp .7s .2s ease both}
-.hero-btns{display:flex;gap:.875rem;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
-.btn-hero{display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-body);font-size:.97rem;font-weight:600;padding:15px 30px;border-radius:var(--r-xl);text-decoration:none;cursor:pointer;transition:all var(--ease)}
-.btn-hero-main{background:var(--terra);color:#fff;border:none;box-shadow:0 8px 28px rgba(201,123,61,.4)}
-.btn-hero-main:hover{background:var(--rust);transform:translateY(-3px);box-shadow:0 14px 40px rgba(201,123,61,.5)}
-.btn-hero-sec{background:transparent;color:var(--bark);border:2px solid var(--sand)}
-.btn-hero-sec:hover{background:var(--sand);border-color:var(--terra);color:var(--terra);transform:translateY(-3px)}
-.hero-stats{display:flex;gap:2.5rem;margin-top:3.5rem;animation:fadeUp .7s .4s ease both}
-.stat-num{font-family:var(--ff-display);font-size:2rem;font-weight:900;color:var(--terra);line-height:1;display:block}
-.stat-lbl{font-size:.72rem;font-weight:600;color:var(--bark);letter-spacing:.8px;text-transform:uppercase}
-
-/* HOW IT WORKS */
-.how{background:var(--sand);padding:5rem 2rem}
-.how-inner{max-width:1280px;margin:0 auto}
-.sec-head{text-align:center;margin-bottom:2.5rem}
-.sec-head h2{font-family:var(--ff-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-1px;color:var(--deep)}
-.sec-head p{color:var(--bark);margin-top:.4rem}
-.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem}
-.how-card{background:var(--white);border-radius:var(--r-lg);padding:2.25rem 2rem;box-shadow:0 4px 20px var(--shadow);text-align:center;transition:transform var(--ease),box-shadow var(--ease)}
-.how-card:hover{transform:translateY(-6px);box-shadow:0 16px 44px rgba(44,31,14,.15)}
-.how-icon{font-size:2.5rem;margin-bottom:1rem;display:block}
-.how-card h3{font-family:var(--ff-display);font-size:1.25rem;color:var(--deep);margin-bottom:.4rem;font-weight:700}
-.how-card p{font-size:.88rem;color:var(--bark);line-height:1.65}
-
-/* ANIMALS SECTION */
-.animals-sec{max-width:1280px;margin:0 auto;padding:0 2rem 5rem}
-.filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
-.f-btn{background:var(--white);border:1.5px solid var(--sand);color:var(--bark);font-family:var(--ff-body);font-size:.85rem;font-weight:500;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all var(--ease)}
-.f-btn:hover,.f-btn.active{background:var(--terra);color:#fff;border-color:var(--terra);box-shadow:0 4px 14px rgba(201,123,61,.3)}
-
-/* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.75rem;min-height:200px}
-
-/* CARD */
-.card{background:var(--white);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 4px 20px var(--shadow);transition:transform var(--ease),box-shadow var(--ease);animation:cardIn .45s ease both}
-.card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 20px 56px rgba(44,31,14,.18)}
-@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.card-img{position:relative;overflow:hidden;aspect-ratio:4/3}
-.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
-.card:hover .card-img img{transform:scale(1.07)}
-.card-badge{position:absolute;top:12px;left:12px;background:var(--terra);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:4px 12px;border-radius:100px}
-.card-body{padding:1.4rem}
-.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.65rem}
-.tag{background:var(--sand);color:var(--bark);font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:100px}
-.tag.g{background:var(--sage-lt);color:#2e5e33}
-.card h3{font-family:var(--ff-display);font-size:1.3rem;font-weight:700;color:var(--deep);margin-bottom:.4rem;letter-spacing:-.3px}
-.card-desc{font-size:.87rem;color:var(--bark);line-height:1.6;margin-bottom:1.1rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:.9rem;border-top:1px solid var(--sand)}
-.donor{display:flex;align-items:center;gap:8px}
-.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--terra),var(--rust));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700}
-.donor-name{font-size:.8rem;font-weight:500;color:var(--bark)}
-.btn-wa{display:inline-flex;align-items:center;gap:5px;background:#25D366;color:#fff;font-family:var(--ff-body);font-size:.82rem;font-weight:600;padding:8px 16px;border-radius:100px;text-decoration:none;box-shadow:0 4px 12px rgba(37,211,102,.35);transition:all var(--ease)}
-.btn-wa:hover{background:#1da851;transform:scale(1.06)}
-
-/* EMPTY */
-.empty{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--bark)}
-.empty-ico{font-size:3.5rem;display:block;margin-bottom:1rem;opacity:.5}
-.empty h3{font-family:var(--ff-display);font-size:1.6rem;color:var(--deep);margin-bottom:.4rem}
-
-/* SKELETON */
-.skel-card{background:var(--white);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 4px 20px var(--shadow)}
-.skel{background:linear-gradient(90deg,var(--sand) 25%,#f5eee3 50%,var(--sand) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.skel-img{height:210px}
-.skel-body{padding:1.4rem;display:flex;flex-direction:column;gap:10px}
-.skel-ln{height:13px;border-radius:6px}
-.skel-ln.s{width:55%}.skel-ln.m{width:75%}.skel-ln.l{width:90%}
-
-/* MODAL */
-.modal{display:none;position:fixed;inset:0;z-index:2000;background:rgba(44,31,14,.55);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem}
-.modal.open{display:flex;animation:fadeIn .25s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal-box{background:var(--white);border-radius:var(--r-lg);padding:2.25rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 28px 72px rgba(44,31,14,.28);animation:slideUp .3s cubic-bezier(.34,1.56,.64,1) both}
-@keyframes slideUp{from{transform:translateY(32px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-.modal-box h2{font-family:var(--ff-display);font-size:1.75rem;font-weight:800;color:var(--deep);margin-bottom:1.5rem;letter-spacing:-.4px}
-.close-btn{position:absolute;top:1.1rem;right:1.3rem;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:none;background:none;font-size:1.4rem;color:var(--bark);cursor:pointer;transition:background var(--ease)}
-.close-btn:hover{background:var(--sand)}
-.form{display:flex;flex-direction:column;gap:.9rem}
-.form input,.form select,.form textarea{background:var(--cream);border:1.5px solid var(--sand);color:var(--deep);font-family:var(--ff-body);font-size:.93rem;padding:12px 15px;border-radius:var(--r-md);outline:none;width:100%;transition:border-color var(--ease),box-shadow var(--ease);appearance:none}
-.form input::placeholder,.form textarea::placeholder{color:#c2b09c}
-.form input:focus,.form select:focus,.form textarea:focus{border-color:var(--terra);box-shadow:0 0 0 3px rgba(201,123,61,.13)}
-.form textarea{resize:vertical;min-height:90px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
-.form input[type=file]{padding:9px;cursor:pointer}
-.img-prev{display:none;border-radius:var(--r-md);overflow:hidden;margin-top:-.3rem}
-.img-prev img{width:100%;height:150px;object-fit:cover;display:block}
-.btn-submit{background:linear-gradient(135deg,var(--terra),var(--rust));color:#fff;font-family:var(--ff-body);font-size:.97rem;font-weight:700;padding:14px;border:none;border-radius:var(--r-md);cursor:pointer;box-shadow:0 8px 22px rgba(201,123,61,.35);transition:all var(--ease);margin-top:.3rem}
-.btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(201,123,61,.5)}
-.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
-
-/* TOAST */
-.toast-wrap{position:fixed;bottom:1.75rem;right:1.75rem;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--deep);color:#fff;padding:13px 20px;border-radius:var(--r-md);font-size:.88rem;font-weight:500;display:flex;align-items:center;gap:9px;box-shadow:0 8px 28px rgba(44,31,14,.3);animation:tIn .35s cubic-bezier(.34,1.56,.64,1) both}
-.toast.ok{border-left:4px solid var(--sage)}
-.toast.err{border-left:4px solid #e74c3c}
-@keyframes tIn{from{transform:translateX(80px);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes tOut{to{transform:translateX(80px);opacity:0}}
-
-/* FOOTER */
-footer{background:var(--deep);color:rgba(255,255,255,.5);text-align:center;padding:1.75rem;font-size:.82rem}
-footer a{color:var(--terra);text-decoration:none}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-
-@media(max-width:640px){
-  .form-row{grid-template-columns:1fr}
-  .hero h1{letter-spacing:-1px}
-  .hero-stats{gap:1.5rem}
-  .nav-links .nav-a{display:none}
-  .hero-btns{flex-direction:column}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AdotePet — Encontre seu novo melhor amigo. Adote cães e gatos que precisam de um lar.">
+  <title>AdotePet 🐾 — Adote com Amor</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-<div class="toast-wrap" id="toastWrap"></div>
-
+<!-- ── NAVBAR ──────────────────────────────────────────────────── -->
 <nav class="navbar" id="navbar">
-  <div class="nav-content">
-    <div class="logo"><span class="logo-paw">🐾</span> AdoteAmigo</div>
-    <div class="nav-links">
-      <a href="#animais" class="nav-a">Animais</a>
-      <a href="#como" class="nav-a">Como Funciona</a>
-      <button class="btn-nav" onclick="openModal()">+ Doar Animal</button>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <span class="logo-icon">🐾</span> AdotePet
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-actions" id="navActions">
+      <a href="#como-funciona" class="nav-link">Como Funciona</a>
+      <a href="#animais" class="nav-link">Animais</a>
+      <a href="admin.html" class="nav-link">Admin</a>
+      <button class="btn-nav" onclick="openModal()">+ Cadastrar Animal</button>
     </div>
   </div>
 </nav>
 
-<header class="hero">
+<!-- ── HERO ────────────────────────────────────────────────────── -->
+<section class="hero">
   <div class="hero-inner">
-    <div class="hero-pill">🐾 Plataforma de Adoção Responsável</div>
-    <h1>Cada vida<br>merece um <em>lar</em></h1>
-    <p class="hero-p">Conectamos animais que precisam de amor a famílias que têm amor pra dar. Simples, rápido e com muito carinho.</p>
-    <div class="hero-btns">
-      <a href="#animais" class="btn-hero btn-hero-main">🧡 Ver Animais</a>
-      <button class="btn-hero btn-hero-sec" onclick="openModal()">🐾 Cadastrar Animal</button>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span>●</span> Adoção responsável
+      </div>
+      <h1>Encontre seu<br><em>melhor amigo</em><br>para sempre</h1>
+      <p class="hero-p">
+        Conectamos animais que precisam de amor com famílias que têm amor para dar.
+        Simples, rápido e com todo o carinho que eles merecem.
+      </p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="document.getElementById('animais').scrollIntoView({behavior:'smooth'})">
+          🐾 Ver Animais
+        </button>
+        <button class="btn btn-outline" onclick="openModal()">
+          + Quero Cadastrar
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span class="stat-n" id="sTotal">0</span>
+          <span class="stat-l">Disponíveis</span>
+        </div>
+        <div>
+          <span class="stat-n" id="sCach">0</span>
+          <span class="stat-l">Cachorros</span>
+        </div>
+        <div>
+          <span class="stat-n" id="sGato">0</span>
+          <span class="stat-l">Gatos</span>
+        </div>
+      </div>
     </div>
-    <div class="hero-stats">
-      <div><span class="stat-num" id="sTotal">0</span><span class="stat-lbl">AGUARDANDO LAR</span></div>
-      <div><span class="stat-num" id="sCach">0</span><span class="stat-lbl">CACHORROS</span></div>
-      <div><span class="stat-num" id="sGato">0</span><span class="stat-lbl">GATOS</span></div>
-    </div>
-  </div>
-</header>
 
-<section class="how" id="como">
-  <div class="how-inner">
-    <div class="sec-head"><h2>Como Funciona</h2><p>Em 3 passos simples você muda uma vida</p></div>
-    <div class="how-grid">
-      <div class="how-card"><span class="how-icon">🔍</span><h3>Explore</h3><p>Veja os animais disponíveis e encontre aquele que combina com você e sua família.</p></div>
-      <div class="how-card"><span class="how-icon">💬</span><h3>Contato</h3><p>Fale diretamente com o doador pelo WhatsApp e conheça melhor o animal.</p></div>
-      <div class="how-card"><span class="how-icon">🏡</span><h3>Adote</h3><p>Leve seu novo amigo para casa e ofereça um lar repleto de amor e cuidado.</p></div>
+    <div class="hero-visual">
+      <div class="hero-blob"></div>
+      <div class="hero-img-grid">
+        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop" alt="Cachorro feliz" loading="eager">
+        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=400&fit=crop" alt="Gato bonito" loading="eager">
+        <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&h=450&fit=crop" alt="Animais adotados" loading="eager">
+      </div>
     </div>
   </div>
 </section>
 
-<section class="animals-sec" id="animais">
-  <div class="sec-head" style="padding-top:3.5rem"><h2>Animais para Adoção</h2><p>Encontre seu novo companheiro de vida</p></div>
-  <div class="filter-bar">
-    <button class="f-btn active" data-f="Todos">🐾 Todos</button>
-    <button class="f-btn" data-f="Cachorro">🐶 Cachorros</button>
-    <button class="f-btn" data-f="Gato">🐱 Gatos</button>
+<!-- ── HOW IT WORKS ─────────────────────────────────────────────── -->
+<section class="how" id="como-funciona">
+  <div class="sec-inner">
+    <div class="sec-head reveal">
+      <span class="sec-eyebrow">Como funciona</span>
+      <h2>Adotar é simples assim</h2>
+      <p>Três passos para transformar a vida de um animal — e a sua.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card reveal" data-step="1">
+        <span class="how-ico">🔍</span>
+        <h3>Explore</h3>
+        <p>Navegue pelos animais disponíveis. Filtre por espécie e encontre o companheiro ideal para o seu estilo de vida.</p>
+      </div>
+      <div class="how-card reveal" data-step="2" style="transition-delay:.1s">
+        <span class="how-ico">💬</span>
+        <h3>Conecte</h3>
+        <p>Entre em contato direto com o doador via WhatsApp. Conheça o animal, tire dúvidas e marque uma visita.</p>
+      </div>
+      <div class="how-card reveal" data-step="3" style="transition-delay:.2s">
+        <span class="how-ico">🏠</span>
+        <h3>Adote</h3>
+        <p>Leve o novo membro da família para casa. Dê a ele o amor e o lar que tanto merece.</p>
+      </div>
+      <div class="how-card reveal" data-step="4" style="transition-delay:.3s">
+        <span class="how-ico">🐾</span>
+        <h3>Cadastre</h3>
+        <p>Tem um animal para adoção? Cadastre gratuitamente e encontre a família perfeita rapidinho.</p>
+      </div>
+    </div>
   </div>
+</section>
+
+<!-- ── ANIMALS ─────────────────────────────────────────────────── -->
+<section class="animals-section" id="animais">
+  <div class="sec-head reveal" style="margin-bottom:2rem">
+    <span class="sec-eyebrow">Para adoção</span>
+    <h2>Animais disponíveis</h2>
+  </div>
+
+  <div class="section-toolbar">
+    <div class="filter-bar">
+      <button class="f-btn active" data-f="Todos">🐾 Todos</button>
+      <button class="f-btn" data-f="Cachorro">🐶 Cachorros</button>
+      <button class="f-btn" data-f="Gato">🐱 Gatos</button>
+      <button class="f-btn" data-f="Outro">🐰 Outros</button>
+    </div>
+    <span class="animal-count" id="animalCount"></span>
+  </div>
+
   <div class="grid" id="grid"></div>
 </section>
 
-<div class="modal" id="modal">
+<!-- ── MODAL ───────────────────────────────────────────────────── -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-box">
-    <button class="close-btn" onclick="closeModal()">×</button>
-    <h2>🐾 Cadastrar Animal</h2>
-    <form class="form" id="formAnimal">
-      <input type="text" name="nome" placeholder="Nome do Animal" required>
+    <div class="modal-head">
+      <h2 id="modalTitle">🐾 Cadastrar Animal</h2>
+      <button class="close-btn" onclick="closeModal()" aria-label="Fechar">✕</button>
+    </div>
+
+    <form class="form" id="formAnimal" enctype="multipart/form-data">
       <div class="form-row">
-        <select name="especie" required><option value="Cachorro">🐶 Cachorro</option><option value="Gato">🐱 Gato</option></select>
-        <select name="idade"><option value="Filhote">🍼 Filhote</option><option value="Jovem">✨ Jovem</option><option value="Adulto">🌟 Adulto</option></select>
+        <div>
+          <label for="nome">Nome do Animal *</label>
+          <input type="text" name="nome" id="nome" placeholder="Ex: Rex, Mimi..." required maxlength="60">
+        </div>
+        <div>
+          <label for="especie">Espécie *</label>
+          <select name="especie" id="especie" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="Cachorro">🐶 Cachorro</option>
+            <option value="Gato">🐱 Gato</option>
+            <option value="Outro">🐰 Outro</option>
+          </select>
+        </div>
       </div>
-      <input type="text" name="raca" placeholder="Raça (opcional)">
-      <textarea maxlength="100" name="descricao" placeholder="Personalidade, histórico, necessidades especiais..."></textarea>
-      <input type="file" name="foto" accept="image/*" id="fotoInput" required>
-      <div class="img-prev" id="imgPrev"><img id="imgPrevImg" src="" alt=""></div>
+
       <div class="form-row">
-        <input type="text" name="nomeDoador" placeholder="Seu Nome" required>
-        <input type="tel" name="contatoDoador" placeholder="WhatsApp (11999999999)" required>
+        <div>
+          <label for="raca">Raça</label>
+          <input type="text" name="raca" id="raca" placeholder="Ex: SRD, Labrador...">
+        </div>
+        <div>
+          <label for="idade">Idade</label>
+          <input type="text" name="idade" id="idade" placeholder="Ex: 2 anos, Filhote...">
+        </div>
       </div>
+
+      <div>
+        <label for="porte">Porte</label>
+        <select name="porte" id="porte">
+          <option value="">Não informar</option>
+          <option value="Pequeno">Pequeno</option>
+          <option value="Médio">Médio</option>
+          <option value="Grande">Grande</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="descricao">Sobre o animal</label>
+        <textarea name="descricao" id="descricao" placeholder="Conte um pouco sobre a personalidade, vacinação, castração..." maxlength="300"></textarea>
+      </div>
+
+      <div>
+        <label>Foto *</label>
+        <div class="upload-area" role="button" tabindex="0" aria-label="Clique para selecionar foto">
+          <input aria-label="file" type="file" name="foto" id="fotoInput" accept="image/*" required>
+          <span class="upload-ico">📷</span>
+          <p>Clique ou arraste uma foto<br><strong>JPG, PNG ou WEBP</strong> até 8MB</p>
+        </div>
+        <div class="img-preview" id="imgPreview">
+          <img id="imgPreviewImg" src="" alt="Preview">
+          <button type="button" class="img-preview-remove" id="removeImg" aria-label="Remover foto">✕</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label for="nomeDoador">Seu Nome *</label>
+          <input type="text" name="nomeDoador" id="nomeDoador" placeholder="Ex: Maria Silva" required maxlength="60">
+        </div>
+        <div>
+          <label for="contatoDoador">WhatsApp *</label>
+          <input type="tel" name="contatoDoador" id="contatoDoador" placeholder="11999999999" required maxlength="20">
+        </div>
+      </div>
+
       <button type="submit" class="btn-submit" id="submitBtn">🐾 Cadastrar Animal</button>
     </form>
   </div>
 </div>
 
-<footer><p>Feito com 🧡 para os animaizinhos — <a href="admin.html">Área Admin</a></p></footer>
+<!-- ── TOAST ────────────────────────────────────────────────────── -->
+<div class="toast-wrap" id="toastWrap"></div>
 
-<script>
-// ─── UTILS
-function toast(msg, type='ok'){
-  const w=document.getElementById('toastWrap');
-  const t=document.createElement('div');
-  t.className='toast '+type;
-  t.innerHTML='<span>'+(type==='ok'?'✅':'❌')+'</span><span>'+msg+'</span>';
-  w.appendChild(t);
-  setTimeout(()=>{t.style.animation='tOut .3s ease forwards';setTimeout(()=>t.remove(),300)},3500);
-}
-function count(el,n){let i=0;const s=Math.max(1,Math.ceil(n/30));const t=setInterval(()=>{i=Math.min(i+s,n);el.textContent=i;if(i>=n)clearInterval(t)},40)}
+<!-- ── FOOTER ───────────────────────────────────────────────────── -->
+<footer>
+  <p>Feito com 🧡 para os animaizinhos &nbsp;·&nbsp; <a href="admin.html">Área Admin</a></p>
+</footer>
 
-// ─── NAVBAR
-window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>20));
-
-// ─── MODAL
-function openModal(){document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
-function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
-document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-
-// ─── PHOTO PREVIEW
-document.getElementById('fotoInput').addEventListener('change',function(){
-  const f=this.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    document.getElementById('imgPrevImg').src=e.target.result;
-    document.getElementById('imgPrev').style.display='block';
-  };
-  r.readAsDataURL(f);
-});
-
-// ─── SUBMIT
-document.getElementById('formAnimal').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const btn=document.getElementById('submitBtn');
-  btn.textContent='⏳ Cadastrando...';btn.disabled=true;
-  try{
-    const r=await fetch('/api/animais',{method:'POST',body:new FormData(e.target)});
-    if(r.ok){toast('Animal cadastrado! 🎉');e.target.reset();document.getElementById('imgPrev').style.display='none';closeModal();load()}
-    else toast('Erro ao cadastrar.','err');
-  }catch{toast('Erro de conexão.','err')}
-  finally{btn.textContent='🐾 Cadastrar Animal';btn.disabled=false}
-});
-
-// ─── FILTER
-let all=[], filter='Todos';
-document.querySelectorAll('.f-btn').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('.f-btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');filter=b.dataset.f;render();
-  });
-});
-
-// ─── RENDER
-function render(){
-  const g=document.getElementById('grid');
-  const data=filter==='Todos'?all:all.filter(a=>a.especie===filter);
-  if(!data.length){
-    g.innerHTML='<div class="empty"><span class="empty-ico">🐾</span><h3>Nenhum animal aqui ainda</h3><p>Seja o primeiro a cadastrar um para adoção!</p></div>';
-    return;
-  }
-  g.innerHTML=data.map((a,i)=>{
-    const ini=(a.nomeDoador||'A').charAt(0).toUpperCase();
-    const wpp=(a.contatoDoador||'').replace(/\D/g,'');
-    const link=wpp?'https://wa.me/55'+wpp+'?text=Olá! Vi o anúncio de '+encodeURIComponent(a.nome)+' no AdoteAmigo!':'#';
-    return `<div class="card" style="animation-delay:${i%6*70}ms">
-      <div class="card-img">
-        <img src="${a.imagemUrl}" alt="${a.nome}" loading="lazy">
-        <div class="card-badge">${a.especie||'Animal'}</div>
-      </div>
-      <div class="card-body">
-        <div class="card-tags">
-          ${a.raca?'<span class="tag">'+a.raca+'</span>':''}
-          ${a.idade?'<span class="tag g">'+a.idade+'</span>':''}
-        </div>
-        <h3>${a.nome}</h3>
-        <p class="card-desc">${a.descricao||'Um amiguinho esperando por um lar cheio de amor e carinho.'}</p>
-        <div class="card-foot">
-          <div class="donor"><div class="av">${ini}</div><span class="donor-name">${a.nomeDoador||'Doador'}</span></div>
-          <a href="${link}" target="_blank" class="btn-wa">💬 Adotar</a>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ─── LOAD
-async function load(){
-  const g=document.getElementById('grid');
-  g.innerHTML=Array(6).fill(`<div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel skel-ln s"></div><div class="skel skel-ln l"></div><div class="skel skel-ln m"></div></div></div>`).join('');
-  try{
-    const r=await fetch('/api/animais');
-    all=await r.json();
-    render();
-    const c=all.filter(a=>a.especie==='Cachorro').length;
-    const ga=all.filter(a=>a.especie==='Gato').length;
-    count(document.getElementById('sTotal'),all.length);
-    count(document.getElementById('sCach'),c);
-    count(document.getElementById('sGato'),ga);
-  }catch{
-    g.innerHTML='<div class="empty"><span class="empty-ico">😿</span><h3>Erro ao carregar</h3><p>Verifique a conexão e recarregue.</p></div>';
-  }
-}
-document.addEventListener('DOMContentLoaded',load);
-</script>
+<script src="/js/main.js"></script>
 </body>
 </html>
