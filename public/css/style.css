@@ -152,7 +152,6 @@ a { text-decoration: none; color: inherit; }
 }
 .hero-inner {
   max-width: 1280px; margin: 0 auto;
-  padding: 130px 2rem 80px;
   position: relative; z-index: 2;
   display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
 }
