@@ -162,15 +162,21 @@
           <input type="text" name="raca" id="raca" placeholder="Ex: SRD, Labrador...">
         </div>
         <div>
-          <label for="idade">Idade</label>
-          <input type="text" name="idade" id="idade" placeholder="Ex: 2 anos, Filhote...">
+          <label for="idade">Idade *</label>
+          <select name="idade" id="idade" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="Filhote">🐣 Filhote</option>
+            <option value="Jovem">🐾 Jovem</option>
+            <option value="Adulto">🐶 Adulto</option>
+            <option value="Idoso">🦴 Idoso</option>
+          </select>
         </div>
       </div>
 
       <div>
-        <label for="porte">Porte</label>
-        <select name="porte" id="porte">
-          <option value="">Não informar</option>
+        <label for="porte">Porte *</label>
+        <select name="porte" id="porte" required>
+          <option value="" disabled selected>Selecione</option>
           <option value="Pequeno">Pequeno</option>
           <option value="Médio">Médio</option>
           <option value="Grande">Grande</option>
